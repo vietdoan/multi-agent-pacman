@@ -227,7 +227,29 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
           legal moves.
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        legalMoves = gameState.getLegalActions(0)
+        values = [self.expValue(gameState.generateSuccessor(0, move), 0, 1) for move in legalMoves]
+        v = max(values)
+        chosenIndex = [index for index in range(len(values)) if values[index] == v]
+        return legalMoves[chosenIndex[0]]
+        
+    def maxValue(self, state, depth):
+        legalMoves = state.getLegalActions(0)
+        if (depth == self.depth or not legalMoves):
+          return self.evaluationFunction(state)
+        values = [self.expValue(state.generateSuccessor(0, move), depth, 1) for move in legalMoves]
+        return max(values)
+
+    def expValue(self, state, depth, ghostIndex):
+        legalMoves = state.getLegalActions(ghostIndex)
+        if not legalMoves:
+          return self.evaluationFunction(state)
+        values = []
+        if (ghostIndex == state.getNumAgents() - 1):
+          values = [self.maxValue(state.generateSuccessor(ghostIndex, move), depth + 1) for move in legalMoves]
+        else:
+          values = [self.expValue(state.generateSuccessor(ghostIndex, move), depth, ghostIndex + 1) for move in legalMoves]
+        return float(sum(values)) / len(values)
 
 def betterEvaluationFunction(currentGameState):
     """
