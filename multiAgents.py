@@ -135,8 +135,42 @@ class MinimaxAgent(MultiAgentSearchAgent):
             Returns the total number of agents in the game
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        v = - 1000000
+        optimalMove = Directions.STOP
+        legalMoves = gameState.getLegalActions(0)
+        for move in legalMoves:
+          successorState = gameState.generateSuccessor(0, move)
+          newValue = self.minValue(successorState, 0, 1)
+          if (newValue > v):
+            v = newValue
+            optimalMove = move      
+        return optimalMove
+        
+    def maxValue(self, state, depth):
+        legalMoves = state.getLegalActions(0)
+        if (depth == self.depth or not legalMoves):
+          return self.evaluationFunction(state)
+        v = - 1000000
+        optimalMove = Directions.STOP
+        for move in legalMoves:
+          successorState = state.generateSuccessor(0, move)
+          v = max(v, self.minValue(successorState, depth, 1))
+        #print "v: %f, depth: %d" % (v, depth)
+        return v
 
+    def minValue(self, state, depth, ghostIndex):
+        legalMoves = state.getLegalActions(ghostIndex)
+        if not legalMoves:
+          return self.evaluationFunction(state)
+        v = 1000000
+        for move in legalMoves:
+          successorState = state.generateSuccessor(ghostIndex, move)
+          if (ghostIndex == state.getNumAgents() - 1):
+            v = min(v, self.maxValue(successorState, depth + 1))
+          else:
+            v = min(v, self.minValue(successorState, depth, ghostIndex + 1))
+        return v
+  
 class AlphaBetaAgent(MultiAgentSearchAgent):
     """
       Your minimax agent with alpha-beta pruning (question 3)
