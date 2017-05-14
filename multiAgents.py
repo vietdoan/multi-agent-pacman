@@ -169,7 +169,7 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
         """
         "*** YOUR CODE HERE ***"
         v = - 1000000
-        optimalMove = Directions.STOP
+        optimalMove = ""
         alpha = - 1000000
         beta = 1000000
         for move in gameState.getLegalActions(0):
@@ -259,7 +259,12 @@ def betterEvaluationFunction(currentGameState):
       DESCRIPTION: <write something here so we know what you did>
     """
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    foodList = currentGameState.getFood().asList()
+    currentPos = currentGameState.getPacmanPosition()
+    disToFood = [util.manhattanDistance(currentPos, foodPos) for foodPos in foodList]
+    closestDisToFood = 0 if not disToFood else min(disToFood)
+    #print "score: %d, closet: %d, len: %d" %(currentGameState.getScore(), closestDisToFood, len(disToFood))
+    return currentGameState.getScore() * 2 - closestDisToFood - len(foodList)
 
 # Abbreviation
 better = betterEvaluationFunction
